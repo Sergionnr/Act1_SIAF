@@ -1,0 +1,65 @@
+import random
+import hashlib
+import math
+
+def convertir_a_entero(valor):
+    try:
+        entero_resultante = int(valor)
+        return entero_resultante
+    except ValueError:
+        return None
+
+# g y primo p
+g = 2
+p = (2^1536)-(2^1472)-(1)+(2^64)*(((2^1406)*(math.pi))+(741804))
+p = convertir_a_entero(p)
+
+# Llaves
+a = random.randint(2**255, 2**256)
+b = random.randint(2**255, 2**256)
+e = random.randint(2**255, 2**256)
+
+A = pow(g, a, p) # Mensaje de Alice a Bob
+E1 = pow(g, e, p) # Eve manda mensaje a Alice simulando ser Bob
+
+# Calcular llave secreta s
+s1 = pow(E1, a, p) # K de Alice
+s2 = pow(A, e, p) # K de Eve ("Bob")
+
+# Convertir llaves a bytes
+s1_bytes = s1.to_bytes((s1.bit_length() + 7) // 8, 'big')
+s2_bytes = s2.to_bytes((s2.bit_length() + 7) // 8, 'big')
+
+# Uso de algoritmo SHA-256
+hash_s1 = hashlib.sha256(s1_bytes).hexdigest()
+hash_s2 = hashlib.sha256(s2_bytes).hexdigest()
+
+# Verificar igualdad de llaves
+if hash_s1 == hash_s2:
+    print("✅ Llaves iguales, Eve infiltrado 🥷🏻")
+else:
+    print("❌ Llaves distintas, Eve descubierto 🫵")
+
+
+# ============================== MENSAJERÍA CON BOB ==============================
+    
+B = pow(g, b, p) # Mensaje de Bob a Alice
+E2 = pow(g, e, p) # Eve manda mensaje a Bob simulando ser Alice
+
+# Calcular llave secreta s
+s1 = pow(E2, b, p) # K de Bob
+s2 = pow(B, e, p) # K de Eve ("Alice")
+
+# Convertir llaves a bytes
+s1_bytes = s1.to_bytes((s1.bit_length() + 7) // 8, 'big')
+s2_bytes = s2.to_bytes((s2.bit_length() + 7) // 8, 'big')
+
+# Uso de algoritmo SHA-256
+hash_s1 = hashlib.sha256(s1_bytes).hexdigest()
+hash_s2 = hashlib.sha256(s2_bytes).hexdigest()
+
+# Verificar igualdad de llaves
+if hash_s1 == hash_s2:
+    print("✅ Llaves iguales, Eve infiltrado 🥷🏻")
+else:
+    print("❌ Llaves distintas, Eve descubierto 🫵")
